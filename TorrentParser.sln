@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentParser", "TorrentParser\TorrentParser.csproj", "{19815BD9-5C8D-4FD6-8374-05CB68ACBEBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentParserShell", "TorrentParserShell\TorrentParserShell.csproj", "{62757A41-AD2F-4EDC-8F05-B6B75AA62DD2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19815BD9-5C8D-4FD6-8374-05CB68ACBEBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19815BD9-5C8D-4FD6-8374-05CB68ACBEBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19815BD9-5C8D-4FD6-8374-05CB68ACBEBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19815BD9-5C8D-4FD6-8374-05CB68ACBEBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62757A41-AD2F-4EDC-8F05-B6B75AA62DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62757A41-AD2F-4EDC-8F05-B6B75AA62DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62757A41-AD2F-4EDC-8F05-B6B75AA62DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62757A41-AD2F-4EDC-8F05-B6B75AA62DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
