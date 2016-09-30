@@ -17,22 +17,23 @@ namespace TorrentParser
     public class TorrentExtension : SharpContextMenu
     {
         private static readonly string InfoText;
+        private static readonly string LInfoText;
         private static readonly string CopyFail;
-        private static readonly string CopySuccess;
+        
 
         static TorrentExtension()
         {
             if (System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase))
             {
-                InfoText = "复制磁力链接...";
+                InfoText = "复制磁力链接";
+                LInfoText = "复制磁力链接（带Tracker）";
                 CopyFail = "解析磁力链接失败！";
-                CopySuccess = "成功复制到剪贴板！";
             }
             else
             {
-                InfoText = "Copy MagnetURI...";
+                InfoText = "Copy MagnetURI";
+                LInfoText = "Copy MagnetURI (With Tracker)";
                 CopyFail = "Torrent parse fail!";
-                CopySuccess = "Copy Successfully!";
             }
         }
 
@@ -46,40 +47,50 @@ namespace TorrentParser
             var menu = new ContextMenuStrip();
             var itemParse = new ToolStripMenuItem
             {
+                Name = "tsmP",
                 Text = InfoText,
                 Image = Properties.Resources.Parser
             };
+            var itemParseL = new ToolStripMenuItem
+            {
+                Name = "tsmPL",
+                Text = LInfoText,
+                Image = Properties.Resources.Parser
+            };
             itemParse.Click += ItemParse_Click;
+            itemParseL.Click += ItemParse_Click;
             menu.Items.Add(itemParse);
+            menu.Items.Add(itemParseL);
             return menu;
         }
 
         private void ItemParse_Click(object sender, EventArgs e)
         {
-            try
+            var item = sender as ToolStripMenuItem;
+            if (item != null)
             {
-                var messageBuilder = new StringBuilder();
-                var textBuilder = new StringBuilder();
-                int count = 0;
-                foreach (var filePath in SelectedItemPaths)
+                try
                 {
-                    Torrent t;
-                    if (!Torrent.TryParse(filePath, out t)) continue;
-                    messageBuilder.AppendLine($"{Path.GetFileNameWithoutExtension(filePath)} = {t.SHAHash}");
-                    textBuilder.AppendLine(t.MagnetURI);
-                    count++;
+                    var textBuilder = new StringBuilder();
+                    var count = 0;
+                    foreach (var filePath in SelectedItemPaths)
+                    {
+                        Torrent t;
+                        if (!Torrent.TryParse(filePath, out t)) continue;
+                        textBuilder.AppendLine(item.Name == "tsmPL" ? t.MagnetURI : $"magnet:?xt=urn:btih:{t.SHAHash}");
+                        count++;
+                    }
+                    if (count <= 0)
+                    {
+                        MessageBox.Show(CopyFail, "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Clipboard.SetText(textBuilder.ToString().TrimEnd('\n', '\r'));
                 }
-                if (count<=0)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(CopyFail, "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    MessageBox.Show($"{CopyFail}:\n{ex.Message}", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                Clipboard.SetText(textBuilder.ToString().TrimEnd('\n','\r'));
-                MessageBox.Show($"{messageBuilder}{CopySuccess}", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{CopyFail}:\n{ex.Message}", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
@@ -131,12 +142,19 @@ Create Time: {3}";
 
                     try
                     {
-                        var bt = File.ReadAllBytes(SelectedItemPath);
-                        if (bt.Length > 2000000)
+                        var fi = new FileInfo(SelectedItemPath);
+                        if (fi.Length > 2000000)
                         {
                             return CannotParse;
                         }
-                        var t = new Torrent(bt);
+                        Torrent t;
+                        using (var ms = new MemoryStream())
+                        using (var fs = fi.OpenRead())
+                        {
+                            fs.CopyTo(ms);
+                            if (!Torrent.TryParse(ms.ToArray(), out t))
+                                return ParseFail;
+                        }
                         return string.Format(Template, t.Name, t.Files.Length, string.Join("\n", t.Files.
                                 OrderByDescending(c => c.Length).
                                 Take(10).
