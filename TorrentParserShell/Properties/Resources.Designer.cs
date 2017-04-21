@@ -63,9 +63,19 @@ namespace TorrentParser.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Parser {
+        internal static System.Drawing.Bitmap magnet_16 {
             get {
-                object obj = ResourceManager.GetObject("Parser", resourceCulture);
+                object obj = ResourceManager.GetObject("magnet_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap magnet_32 {
+            get {
+                object obj = ResourceManager.GetObject("magnet_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

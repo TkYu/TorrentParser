@@ -57,14 +57,8 @@
     <Compile Include="TorrentExtension.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="install.cmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Key.snk" />
     <None Include="packages.config" />
-    <None Include="uninstall.cmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -73,12 +67,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Parser.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="srm.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\magnet_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\magnet_16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

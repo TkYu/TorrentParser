@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,15 +21,22 @@ namespace TorrentParser
         private static readonly string InfoText;
         private static readonly string LInfoText;
         private static readonly string CopyFail;
-        
 
         static TorrentExtension()
         {
-            if (System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase))
+            
+
+            if (CultureInfo.CurrentCulture.IetfLanguageTag == "zh-CN")
             {
                 InfoText = "复制磁力链接";
                 LInfoText = "复制磁力链接（带Tracker）";
                 CopyFail = "解析磁力链接失败！";
+            }
+            else if (CultureInfo.CurrentCulture.IetfLanguageTag == "zh-TW" || CultureInfo.CurrentCulture.IetfLanguageTag == "zh-HK")
+            {
+                InfoText = "複製磁力連結";
+                LInfoText = "複製磁力連結（帶Tracker）";
+                CopyFail = "解析磁力連結失敗！";
             }
             else
             {
@@ -45,17 +54,19 @@ namespace TorrentParser
         protected override ContextMenuStrip CreateMenu()
         {
             var menu = new ContextMenuStrip();
+            var graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
+            var dpi = (int)graphics.DpiX;
             var itemParse = new ToolStripMenuItem
             {
                 Name = "tsmP",
                 Text = InfoText,
-                Image = Properties.Resources.Parser
+                Image = dpi < 192 ? Properties.Resources.magnet_16 : Properties.Resources.magnet_32
             };
             var itemParseL = new ToolStripMenuItem
             {
                 Name = "tsmPL",
                 Text = LInfoText,
-                Image = Properties.Resources.Parser
+                Image = dpi < 192 ? Properties.Resources.magnet_16 : Properties.Resources.magnet_32
             };
             itemParse.Click += ItemParse_Click;
             itemParseL.Click += ItemParse_Click;
@@ -82,14 +93,16 @@ namespace TorrentParser
                     }
                     if (count <= 0)
                     {
-                        MessageBox.Show(CopyFail, "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        //MessageBox.Show(CopyFail, "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Helper.ShowBalloon(CopyFail, "Attention", SystemIcons.Error);
                         return;
                     }
                     Clipboard.SetText(textBuilder.ToString().TrimEnd('\n', '\r'));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"{CopyFail}:\n{ex.Message}", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //MessageBox.Show($"{CopyFail}:\n{ex.Message}", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Helper.ShowBalloon($"{CopyFail}:\n{ex.Message}", "Attention", SystemIcons.Error);
                 }
             }
         }
@@ -106,7 +119,7 @@ namespace TorrentParser
 
         static TorrentInfoTipHandler()
         {
-            if (System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase))
+            if (CultureInfo.CurrentCulture.IetfLanguageTag == "zh-CN")
             {
                 FolderStr = "文件夹  ";
                 CannotParse = "无法解析，文件过大。";
@@ -118,6 +131,19 @@ namespace TorrentParser
 {2}
 
 创建时间：{3}";
+            }
+            else if (CultureInfo.CurrentCulture.IetfLanguageTag == "zh-TW" || CultureInfo.CurrentCulture.IetfLanguageTag == "zh-HK")
+            {
+                FolderStr = "資料夾 ";
+                CannotParse = "無法解析，檔案過大。";
+                ParseFail = "種子解析失敗！";
+                Template = @"種子標題： {0}
+
+檔案清單（{1}個檔案）：
+
+{2}
+
+建立日期： {3}";
             }
             else
             {
@@ -168,6 +194,23 @@ Create Time: {3}";
                     return $"{FolderStr}{Path.GetFileName(SelectedItemPath)}'";
                 default:
                     return string.Empty;
+            }
+        }
+    }
+
+    public static class Helper
+    {
+        public static void ShowBalloon(string body, string title = null, Icon icon = null,int timeout = 3)
+        {
+            using (var notification = new NotifyIcon
+            {
+                Visible = true,
+                Icon = icon??SystemIcons.Information,
+                BalloonTipTitle = title?? "TorrentParser",
+                BalloonTipText = body
+            })
+            {
+                notification.ShowBalloonTip(timeout);
             }
         }
     }
